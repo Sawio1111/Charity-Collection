@@ -12,12 +12,50 @@
 </head>
 
 <body>
+
+{% block header_class %}
+
+{% endblock header_class %}
+
+    <nav class="container container--70">
+        <ul class="nav--actions">
+            {% if user.is_authenticated %}
+            <li class="logged-user">
+                Witaj {{ user.email }}
+                <ul class="dropdown">
+                  <li><a href="#">Profil</a></li>
+                  <li><a href="#">Ustawienia</a></li>
+                  <li><a href="{% url 'logout' %}">Wyloguj</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li><a href="{% url 'login' %}#login" class="btn btn--small btn--without-border">Zaloguj</a></li>
+            <li><a href="{% url 'register' %}#register" class="btn btn--small btn--highlighted">Załóż konto</a></li>
+        {% endif %}
+        </ul>
+
+        <ul>
+          <li><a href="{% url 'main' %}" class="btn btn--without-border active">Start</a></li>
+          <li><a href="{% url 'main' %}#steps" class="btn btn--without-border">O co chodzi?</a></li>
+          <li><a href="{% url 'main' %}#about-us" class="btn btn--without-border">O nas</a></li>
+          <li><a href="{% url 'main' %}#help" class="btn btn--without-border">Fundacje i organizacje</a></li>
+            {% if index %}
+          <li><a href="{% url 'add-donation' %}" class="btn btn--without-border">Przekaż dary</a></li>
+            {% endif %}
+          <li><a href="{% url 'main' %}#contact" class="btn btn--without-border">Kontakt</a></li>
+        </ul>
+      </nav>
+
+{% block header_content %}
+
+{% endblock header_content %}
+
 {% block content %}
 
 {% endblock content %}
 
 <footer>
-  <div class="contact">
+  <div class="contact" id="contact">
     <h2>Skontaktuj się z nami</h2>
     <h3>Formularz kontaktowy</h3>
     <form class="form--contact">

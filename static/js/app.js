@@ -198,6 +198,9 @@ document.addEventListener("DOMContentLoaded", function() {
           e.preventDefault();
           this.currentStep++;
           this.updateForm();
+          if (this.currentStep === 1) {
+            
+          }
         });
       });
 

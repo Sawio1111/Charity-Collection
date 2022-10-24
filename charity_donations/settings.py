@@ -138,3 +138,6 @@ AUTH_USER_MODEL = 'donations.User'
 AUTHENTICATION_BACKENDS = (
     ('django.contrib.auth.backends.ModelBackend'),
 )
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
