@@ -198,9 +198,6 @@ document.addEventListener("DOMContentLoaded", function() {
           e.preventDefault();
           this.currentStep++;
           this.updateForm();
-          if (this.currentStep === 1) {
-            
-          }
         });
       });
 
@@ -230,6 +227,9 @@ document.addEventListener("DOMContentLoaded", function() {
         slide.classList.remove("active");
 
         if (slide.dataset.step == this.currentStep) {
+          if (this.currentStep === 3) {
+            this.updateInstitution()
+          }
           slide.classList.add("active");
         }
       });
@@ -238,6 +238,108 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
       // TODO: get data from inputs and show them in summary
+    }
+    updateInstitution() {
+      let categories = document.querySelectorAll('#categories')
+      let categories_id = [];
+      categories.forEach(el => {
+        if (el.checked === true) {
+          categories_id.push(el.value)
+        }
+      })
+      fetch('http://127.0.0.1:8000/categories/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFTOKEN': this.getCookie('csrftoken')
+        },
+        body: JSON.stringify({'categories_id': categories_id})})
+          .then(response => response.json())
+          .then(result => {
+            let main = document.querySelector('div[data-step="3"]')
+            main.innerHTML = ''
+            let h3 = document.createElement('h3')
+            h3.innerText = 'Wybierz organizacje, której chcesz pomóc:'
+            main.appendChild(h3)
+            if (result.response.length > 0) {
+              result.response.forEach(el => {
+                console.log(el)
+                let div = document.createElement('div')
+                div.classList.add('form-group', 'form-group--checkbox')
+                let label = document.createElement('label')
+                div.appendChild(label)
+                let input = document.createElement('input')
+                input.type = 'radio'
+                input.name = 'organisation'
+                input.value = el.id
+                input.id = 'organisation'
+                let span1 = document.createElement('span')
+                span1.classList.add('checkbox', 'radio')
+                label.appendChild(input)
+                label.appendChild(span1)
+                let span2 = document.createElement('span')
+                span2.classList.add('description')
+                let div_span2 = document.createElement('div')
+                div_span2.classList.add('title')
+                div_span2.innerText = el.name
+                span2.appendChild(div_span2)
+                let div2_span2 = document.createElement('div')
+                div2_span2.classList.add('subtitle')
+                div2_span2.innerText = el.description
+                span2.appendChild(div2_span2)
+                label.appendChild(span2)
+                console.log(main)
+                main.appendChild(div)
+              })
+            }
+            else {
+              let info_h3 = document.createElement('h3')
+              info_h3.innerText = 'Żadna organizacja nie spełnia wymagań'
+            }
+            let div_button = document.createElement('div')
+              div_button.classList.add('form-group', 'form-group--buttons')
+              let buttonPrev = document.createElement('button')
+              buttonPrev.type = 'button'
+              buttonPrev.classList.add('btn', 'prev-step')
+              buttonPrev.innerText = 'Wstecz'
+              buttonPrev.addEventListener('click', e => {
+                e.preventDefault()
+                this.currentStep--
+                this.updateForm()
+              })
+              let buttonNext = document.createElement('button')
+              buttonNext.type = 'button'
+              buttonNext.classList.add('btn', 'next-step')
+              buttonNext.innerText = 'Dalej'
+              buttonNext.addEventListener('click', e => {
+                e.preventDefault()
+                this.currentStep++
+                this.updateForm()
+              })
+              div_button.appendChild(buttonPrev)
+              div_button.appendChild(buttonNext)
+              main.appendChild(div_button)
+          })
+          .catch(error => {
+        console.log(error)
+          })
+    }
+
+    getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue
     }
 
     /**

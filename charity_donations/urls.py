@@ -20,10 +20,12 @@ import donations.views
 from donations import views as donations
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name='admin'),
     path('', donations.LandingPageView.as_view(), name='main'),
     path('donation/', donations.AddDonationView.as_view(), name='add-donation'),
     path('login/', donations.LoginToView.as_view(), name='login'),
     path('logout/', donations.LogoutToView.as_view(), name='logout'),
     path('register/', donations.RegisterView.as_view(), name='register'),
+
+    path('categories/', donations.ApiCategories.as_view(), name='api-categories'),
 ]

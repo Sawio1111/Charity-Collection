@@ -1,11 +1,15 @@
+import json
+
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.db.models import Q
 
-from .models import Donation, Category
+from .models import Donation, Category, Institution
 from .forms import RegistrationForms, UpgradeAuthenticationForm
 
 
@@ -28,8 +32,10 @@ class AddDonationView(LoginRequiredMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		categories = Category.objects.all()
+		institutions = Institution.objects.all()
 		context = {
-			'categories': categories
+			'categories': categories,
+			'institutions': institutions
 		}
 		return render(request, template_name=self.template_name, context=context)
 
@@ -64,6 +70,23 @@ class RegisterView(CreateView):
 		return reverse_lazy('login') + '#login'
 
 
-class OrganisationFetchView(View):
+class ApiCategories(LoginRequiredMixin, View):
 
 	def post(self, request, *args, **kwargs):
+		list_id = json.loads(request.body)['categories_id']
+		institution = [list(Institution.objects.filter(categories=id)) for id in list_id]
+		response = []
+		all_institution = Institution.objects.all()
+		for all_ins in all_institution:
+			hit = 0
+			for ins in institution:
+				if all_ins in ins:
+					hit += 1
+				if hit == len(list_id):
+					response.append({
+						'name': all_ins.name,
+						'description': all_ins.description,
+						'type': all_ins.get_type_display(),
+						'id': all_ins.id
+					})
+		return JsonResponse({'response': response})
