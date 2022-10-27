@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <title>Document</title>
+    <style>
+      table,
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+    </style>
+{% endblock head%}
+
+{% block header_class %}
+    <header>
+{% endblock header_class %}
+
+{% block header_content %}
+    </header>
+{% endblock header_content %}
+
+{% block content %}
+
+    <section class="login-page" id="login">
+        <h2>Twoje Dane:</h2>
+            <div class="btn">
+                Email: {{ user.email  }}
+            </div>
+        <h2>Twoje dotacje:</h2>
+        <table class="btn">
+            <thead>
+                <tr>
+                    <th>Ilość worków</th>
+                    <th>Data</th>
+                    <th>Godzina</th>
+                    <th>Organizacja</th>
+                    <th>Kategorie</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for donation in object_list %}
+                <tr>
+                    <td>{{ donation.quantity }}</td>
+                    <td>{{ donation.pick_up_date }}</td>
+                    <td>{{ donation.pick_up_time }}</td>
+                    <td>{{ donation.institution }}</td>
+                    <td>
+                        {% for i in donation.categories.all %}
+                        {{ i.name }}
+                        {% endfor %}
+                    </td>
+                    <td>placeholder Status</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+{% endblock content %}

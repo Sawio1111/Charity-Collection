@@ -44,6 +44,10 @@ class Category(models.Model):
 	def __str__(self):
 		return self.name
 
+	class Meta:
+		verbose_name = "category"
+		verbose_name_plural = "categories"
+
 
 class Institution(models.Model):
 	institution_type= (
@@ -62,7 +66,7 @@ class Institution(models.Model):
 
 class Donation(models.Model):
 	quantity = models.PositiveBigIntegerField()
-	categories = models.ManyToManyField(Category)
+	categories = models.ManyToManyField(Category, related_name='donation_categories')
 	institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True)
 	address = models.CharField(max_length=256)
 	phone_number = models.PositiveBigIntegerField()

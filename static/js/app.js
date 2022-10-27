@@ -230,6 +230,9 @@ document.addEventListener("DOMContentLoaded", function() {
           if (this.currentStep === 3) {
             this.updateInstitution()
           }
+          if (this.currentStep === 5) {
+            this.getDataAndSummary()
+          }
           slide.classList.add("active");
         }
       });
@@ -239,6 +242,42 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // TODO: get data from inputs and show them in summary
     }
+    getDataAndSummary () {
+      let institutes = document.querySelector('[name="organisation"]:checked')
+      if (institutes) {
+        let name_institute = institutes.nextElementSibling.nextElementSibling.children[0].innerText
+        let form_institute = document.querySelector('.institute')
+        form_institute.innerText = `Dla fundacji ${name_institute}`
+      }
+
+      let quantity = document.querySelector('[name="bags"]')
+      let form_quantity = document.querySelector('.quantity')
+      let info_bags = 'worków'
+      if (quantity.value == 1) {
+        info_bags = 'worek'
+      } else if (quantity.value == '') {
+        info_bags = '0 worków'
+      }
+      form_quantity.innerText = `Odajesz ${quantity.value} ${info_bags}`
+
+      let address = document.querySelector('[name="address"]')
+      let city = document.querySelector('[name="city"]')
+      let zip_code = document.querySelector('[name="postcode"]')
+      let phone_number = document.querySelector('[name="phone"]')
+      document.querySelector('.form-address').innerHTML = `
+          <li>${address.value}<li>
+          <li>${city.value}<li>
+          <li>${zip_code.value}<li>
+          <li>${phone_number.value}<li>`
+      let date = document.querySelector('[name="date"]')
+      let time = document.querySelector('[name="time"]')
+      let comment = document.querySelector('[name="more_info"]')
+      document.querySelector('.form-delivery').innerHTML = `
+          <li>${date.value}<li>
+          <li>${time.value}<li>
+          <li>${comment.value}<li>`
+    }
+
     updateInstitution() {
       let categories = document.querySelectorAll('#categories')
       let categories_id = [];
@@ -264,7 +303,6 @@ document.addEventListener("DOMContentLoaded", function() {
             main.appendChild(h3)
             if (result.response.length > 0) {
               result.response.forEach(el => {
-                console.log(el)
                 let div = document.createElement('div')
                 div.classList.add('form-group', 'form-group--checkbox')
                 let label = document.createElement('label')
@@ -289,13 +327,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 div2_span2.innerText = el.description
                 span2.appendChild(div2_span2)
                 label.appendChild(span2)
-                console.log(main)
                 main.appendChild(div)
               })
             }
             else {
               let info_h3 = document.createElement('h3')
-              info_h3.innerText = 'Żadna organizacja nie spełnia wymagań'
+              info_h3.innerText = 'Żadna organizacja nie spełnia wymagań.'
+              main.appendChild(info_h3)
             }
             let div_button = document.createElement('div')
               div_button.classList.add('form-group', 'form-group--buttons')

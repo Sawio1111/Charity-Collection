@@ -3,14 +3,15 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import CreateView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.views.generic import CreateView, ListView
+from django.contrib.auth.views import LoginView, LogoutView, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.db.models import Q
 
 from .models import Donation, Category, Institution
 from .forms import RegistrationForms, UpgradeAuthenticationForm
+
+User = get_user_model()
 
 
 class LandingPageView(View):
@@ -68,6 +69,22 @@ class RegisterView(CreateView):
 
 	def get_success_url(self):
 		return reverse_lazy('login') + '#login'
+
+
+class UserProfileView(LoginRequiredMixin, ListView):
+	template_name = 'donations/profil.html'
+
+	def get_queryset(self):
+		return Donation.objects.filter(user_id=self.request.user.id)
+
+	def get(self, request, *args, **kwargs):
+		return super().get(self, request, *args, **kwargs)
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user'] = User.objects.get(id=self.request.user.id)
+		return context
+
 
 
 class ApiCategories(LoginRequiredMixin, View):
