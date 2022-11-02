@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import ValidationError
 
+from .models import Donation
+
 User = get_user_model()
 
 
@@ -45,3 +47,9 @@ class UpgradeAuthenticationForm(AuthenticationForm):
 		super().__init__(*args, **kwargs)
 		self.fields['username'].widget.attrs['placeholder'] = 'Email'
 		self.fields['password'].widget.attrs['placeholder'] = 'Hasło'
+
+
+class DonationForm(forms.ModelForm):
+	class Meta:
+		model = Donation
+		fields = '__all__'

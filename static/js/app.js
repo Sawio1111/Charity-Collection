@@ -243,14 +243,15 @@ document.addEventListener("DOMContentLoaded", function() {
       // TODO: get data from inputs and show them in summary
     }
     getDataAndSummary () {
-      let institutes = document.querySelector('[name="organisation"]:checked')
+      let data = this.getFormValue()
+      let institutes = data.institution
       if (institutes) {
         let name_institute = institutes.nextElementSibling.nextElementSibling.children[0].innerText
         let form_institute = document.querySelector('.institute')
         form_institute.innerText = `Dla fundacji ${name_institute}`
       }
 
-      let quantity = document.querySelector('[name="bags"]')
+      let quantity = data.quantity
       let form_quantity = document.querySelector('.quantity')
       let info_bags = 'worków'
       if (quantity.value == 1) {
@@ -260,22 +261,37 @@ document.addEventListener("DOMContentLoaded", function() {
       }
       form_quantity.innerText = `Odajesz ${quantity.value} ${info_bags}`
 
-      let address = document.querySelector('[name="address"]')
-      let city = document.querySelector('[name="city"]')
-      let zip_code = document.querySelector('[name="postcode"]')
-      let phone_number = document.querySelector('[name="phone"]')
-      document.querySelector('.form-address').innerHTML = `
+      let address = data.address
+      let city = data.city
+      let zip_code = data.zipcode
+      let phone_number = data.phone_number
+      let form_address = document.querySelector('.form-address')
+      if (address.value !== '' && city.value !== '' && zip_code.value !== '' && phone_number.value !== '') {
+        form_address.innerHTML = `
           <li>${address.value}<li>
           <li>${city.value}<li>
           <li>${zip_code.value}<li>
           <li>${phone_number.value}<li>`
-      let date = document.querySelector('[name="date"]')
-      let time = document.querySelector('[name="time"]')
-      let comment = document.querySelector('[name="more_info"]')
-      document.querySelector('.form-delivery').innerHTML = `
+      } else {
+        form_address.innerHTML = `
+        <li>Uzupełnij dane dotyczące adresu</li>
+        `
+      }
+      let date = data.date
+      let time = data.time
+      let comment = data.comment
+      let form_delivery = document.querySelector('.form-delivery')
+      if (date.value !== '' && time.value !== '' && comment.value !== '') {
+        form_delivery.innerHTML = `
           <li>${date.value}<li>
           <li>${time.value}<li>
-          <li>${comment.value}<li>`
+          <li>${comment.value}<li>\`
+          `
+      } else {
+        form_delivery.innerHTML = `
+        <li>Uzupełnij dane dotyczące terminu odbioru</li>
+        `
+      }
     }
 
     updateInstitution() {
@@ -380,6 +396,69 @@ document.addEventListener("DOMContentLoaded", function() {
       return cookieValue
     }
 
+    getFormValue() {
+      let institution = document.querySelector('[name="organisation"]:checked')
+      let data = {
+        'address': document.querySelector('[name="address"]'),
+        'city': document.querySelector('[name="city"]'),
+        'zipcode': document.querySelector('[name="postcode"]'),
+        'phone_number': document.querySelector('[name="phone"]'),
+        'date': document.querySelector('[name="date"]'),
+        'time': document.querySelector('[name="time"]'),
+        'comment': document.querySelector('[name="more_info"]'),
+        'quantity': document.querySelector('[name="bags"]'),
+        'institution': document.querySelector('[name="organisation"]:checked'),
+        'categories': document.querySelectorAll('[name="categories"]:checked')
+      }
+      console.log(data.categories)
+      return data
+    }
+
+    sendForm () {
+      let data = this.getFormValue()
+      let categories = document.querySelectorAll('#categories')
+      let categories_id = [];
+      categories.forEach(el => {
+        if (el.checked === true) {
+          categories_id.push(el.value)
+        }
+      })
+      let institution = 'error'
+        if (data.institution !== null) {
+          institution = data.institution.value
+        }
+      let form = {
+        'address': data.address.value !== '' ? data.address.value: 'error',
+        'city': data.city.value !== '' ? data.city.value : 'error',
+        'zip_code': data.zipcode.value !== '' ? data.zipcode.value: 'error',
+        'phone_number': data.phone_number.value !== '' ? data.phone_number.value: 'error',
+        'pick_up_date': data.date.value !== '' ? data.date.value: 'error',
+        'pick_up_time': data.time.value !== '' ? data.time.value: 'error',
+        'pick_up_comment': data.comment.value !== '' ? data.comment.value: 'error',
+        'quantity': data.quantity.value !== '' ? data.quantity.value: 'error',
+        'institution': institution,
+        'categories': categories_id
+      }
+      fetch('http://127.0.0.1:8000/form-request/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFTOKEN': this.getCookie('csrftoken')
+        },
+        body: JSON.stringify({'form': form})})
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.response)
+            if (data.response === "Data saved") {
+              window.location.assign( 'http://127.0.0.1:8000/form-confirmation/confirmed/')
+            } else {
+              window.location.assign('http://127.0.0.1:8000/form-confirmation/unconfirmed/')
+            }
+          }).catch(error => {
+            console.log(error)
+      })
+    }
     /**
      * Submit form
      *
@@ -389,6 +468,7 @@ document.addEventListener("DOMContentLoaded", function() {
       e.preventDefault();
       this.currentStep++;
       this.updateForm();
+      this.sendForm()
     }
   }
   const form = document.querySelector(".form--steps");

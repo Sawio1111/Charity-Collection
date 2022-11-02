@@ -27,6 +27,8 @@ urlpatterns = [
     path('logout/', donations.LogoutToView.as_view(), name='logout'),
     path('register/', donations.RegisterView.as_view(), name='register'),
     path('profile/', donations.UserProfileView.as_view(), name='profile'),
+    path('form-confirmation/<str:info>/', donations.FormResponseView.as_view(), name='form-confirmation'),
 
     path('categories/', donations.ApiCategories.as_view(), name='api-categories'),
+    path('form-request/', donations.ApiFormRequest.as_view(), name='form-request'),
 ]

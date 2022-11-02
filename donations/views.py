@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
 from .models import Donation, Category, Institution
-from .forms import RegistrationForms, UpgradeAuthenticationForm
+from .forms import RegistrationForms, UpgradeAuthenticationForm, DonationForm
 
 User = get_user_model()
 
@@ -23,7 +23,6 @@ class LandingPageView(View):
 		context = {
 			'bags': number_bags,
 			'organisation': number_organisation,
-			'index': 'index',
 		}
 		return render(request, template_name=self.template_name, context=context)
 
@@ -86,6 +85,12 @@ class UserProfileView(LoginRequiredMixin, ListView):
 		return context
 
 
+class FormResponseView(LoginRequiredMixin, View):
+	template_name = 'donations/form-confirmation.html'
+
+	def get(self, request, *args, **kwargs):
+		return render(request, template_name=self.template_name, context={'info': kwargs['info']})
+
 
 class ApiCategories(LoginRequiredMixin, View):
 
@@ -107,3 +112,17 @@ class ApiCategories(LoginRequiredMixin, View):
 						'id': all_ins.id
 					})
 		return JsonResponse({'response': response})
+
+
+class ApiFormRequest(LoginRequiredMixin, View):
+	form_class = DonationForm
+
+	def post(self, request, *args, **kwargs):
+		form = json.loads(request.body)['form']
+		print(form)
+		form['user'] = self.request.user
+		form_class = self.form_class(form)
+		if form_class.is_valid():
+			form_class.save()
+			return JsonResponse({'response': 'Data saved'})
+		return JsonResponse({'response': 'Wrong data'})
