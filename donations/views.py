@@ -133,11 +133,12 @@ class ApiFormRequest(LoginRequiredMixin, View):
 		return JsonResponse({'response': 'Wrong data'})
 
 
-class ApiFoundation(LoginRequiredMixin, View):
-
-	def get(self, request, *args, **kwargs):
-		list_foundation = Institution.objects.filter(type="FOUNDATION").values('name', 'description')
-		paginator = Paginator(list_foundation, 2)
-		page_number = kwargs['page']
-		page_obj = paginator.get_page(page_number)
-		return JsonResponse({'pages': page_obj.number, 'obj': list(page_obj.object_list)})
+#In progress
+# class ApiFoundation(LoginRequiredMixin, View):
+#
+# 	def get(self, request, *args, **kwargs):
+# 		list_foundation = Institution.objects.filter(type="FOUNDATION").values('name', 'description')
+# 		paginator = Paginator(list_foundation, 2)
+# 		page_number = kwargs['page']
+# 		page_obj = paginator.get_page(page_number)
+# 		return JsonResponse({'pages': page_obj.number, 'obj': list(page_obj.object_list)})
