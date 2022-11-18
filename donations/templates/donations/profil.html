@@ -43,18 +43,36 @@
             </thead>
             <tbody>
             {% for donation in object_list %}
-                <tr>
-                    <td>{{ donation.quantity }}</td>
-                    <td>{{ donation.pick_up_date }}</td>
-                    <td>{{ donation.pick_up_time }}</td>
-                    <td>{{ donation.institution }}</td>
-                    <td>
-                        {% for i in donation.categories.all %}
-                        {{ i.name }}
-                        {% endfor %}
-                    </td>
-                    <td>placeholder Status</td>
-                </tr>
+                {% if donation.is_taken == 'NOT TAKEN' %}
+                    <tr>
+                        <td>{{ donation.quantity }}</td>
+                        <td>{{ donation.pick_up_date }}</td>
+                        <td>{{ donation.pick_up_time }}</td>
+                        <td>{{ donation.institution }}</td>
+                        <td>
+                            {% for i in donation.categories.all %}
+                            {{ i.name }}
+                            {% endfor %}
+                        </td>
+                        <td>{{ donation.get_is_taken_display }}</td>
+                    </tr>
+                    {% endif %}
+            {% endfor %}
+            {% for donation in object_list %}
+                {% if donation.is_taken == 'TAKEN' %}
+                    <tr style="color: #737373">
+                        <td>{{ donation.quantity }}</td>
+                        <td>{{ donation.pick_up_date }}</td>
+                        <td>{{ donation.pick_up_time }}</td>
+                        <td>{{ donation.institution }}</td>
+                        <td>
+                            {% for i in donation.categories.all %}
+                            {{ i.name }}
+                            {% endfor %}
+                        </td>
+                        <td>{{ donation.get_is_taken_display }}</td>
+                    </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>

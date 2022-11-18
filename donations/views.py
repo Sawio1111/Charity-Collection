@@ -7,6 +7,7 @@ from django.views.generic import CreateView, ListView
 from django.contrib.auth.views import LoginView, LogoutView, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.core.paginator import Paginator
 
 from .models import Donation, Category, Institution
 from .forms import RegistrationForms, UpgradeAuthenticationForm, DonationForm
@@ -20,9 +21,15 @@ class LandingPageView(View):
 	def get(self, request, *args, **kwargs):
 		number_bags = Donation.objects.all().count()
 		number_organisation = Donation.objects.values('institution_id').distinct().count()
+		foundation = Institution.objects.filter(type='FOUNDATION')
+		non_governmental = Institution.objects.filter(type='NON-GOVERNMENTAL ORGANISATION')
+		local_collection = Institution.objects.filter(type='LOCAL COLLECTION')
 		context = {
 			'bags': number_bags,
 			'organisation': number_organisation,
+			'foundations': foundation,
+			'non_governmental': non_governmental,
+			'local_collections': local_collection,
 		}
 		return render(request, template_name=self.template_name, context=context)
 
@@ -32,10 +39,8 @@ class AddDonationView(LoginRequiredMixin, View):
 
 	def get(self, request, *args, **kwargs):
 		categories = Category.objects.all()
-		institutions = Institution.objects.all()
 		context = {
 			'categories': categories,
-			'institutions': institutions
 		}
 		return render(request, template_name=self.template_name, context=context)
 
@@ -126,3 +131,13 @@ class ApiFormRequest(LoginRequiredMixin, View):
 			form_class.save()
 			return JsonResponse({'response': 'Data saved'})
 		return JsonResponse({'response': 'Wrong data'})
+
+
+class ApiFoundation(LoginRequiredMixin, View):
+
+	def get(self, request, *args, **kwargs):
+		list_foundation = Institution.objects.filter(type="FOUNDATION").values('name', 'description')
+		paginator = Paginator(list_foundation, 2)
+		page_number = kwargs['page']
+		page_obj = paginator.get_page(page_number)
+		return JsonResponse({'pages': page_obj.number, 'obj': list(page_obj.object_list)})

@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
       this.events();
     }
 
+
     events() {
       /**
        * Slide buttons
@@ -297,12 +298,13 @@ document.addEventListener("DOMContentLoaded", function() {
     updateInstitution() {
       let categories = document.querySelectorAll('#categories')
       let categories_id = [];
+      console.log(window.location.host)
       categories.forEach(el => {
         if (el.checked === true) {
           categories_id.push(el.value)
         }
       })
-      fetch('http://127.0.0.1:8000/categories/', {
+      fetch(`/categories/`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -410,7 +412,6 @@ document.addEventListener("DOMContentLoaded", function() {
         'institution': document.querySelector('[name="organisation"]:checked'),
         'categories': document.querySelectorAll('[name="categories"]:checked')
       }
-      console.log(data.categories)
       return data
     }
 
@@ -439,7 +440,7 @@ document.addEventListener("DOMContentLoaded", function() {
         'institution': institution,
         'categories': categories_id
       }
-      fetch('http://127.0.0.1:8000/form-request/', {
+      fetch(`/form-request/`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -451,9 +452,9 @@ document.addEventListener("DOMContentLoaded", function() {
           .then(data => {
             console.log(data.response)
             if (data.response === "Data saved") {
-              window.location.assign( 'http://127.0.0.1:8000/form-confirmation/confirmed/')
+              window.location.assign( `/form-confirmation/confirmed/`)
             } else {
-              window.location.assign('http://127.0.0.1:8000/form-confirmation/unconfirmed/')
+              window.location.assign(`/form-confirmation/unconfirmed/`)
             }
           }).catch(error => {
             console.log(error)

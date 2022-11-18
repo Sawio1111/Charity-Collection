@@ -31,4 +31,5 @@ urlpatterns = [
 
     path('categories/', donations.ApiCategories.as_view(), name='api-categories'),
     path('form-request/', donations.ApiFormRequest.as_view(), name='form-request'),
+    path('foundation/<str:page>/', donations.ApiFoundation.as_view(), name='api-foundation'),
 ]

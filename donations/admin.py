@@ -23,7 +23,14 @@ class UserAdmin(BaseUserAdmin):
 	ordering = ('email',)
 
 
+class DonationAdmin(admin.ModelAdmin):
+
+	model = Donation
+	list_display = ('id', 'is_taken')
+	list_filter = ('city', 'is_taken',)
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Institution)
 admin.site.register(Category)
-admin.site.register(Donation)
+admin.site.register(Donation, DonationAdmin)

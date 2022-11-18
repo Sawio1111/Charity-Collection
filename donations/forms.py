@@ -53,3 +53,4 @@ class DonationForm(forms.ModelForm):
 	class Meta:
 		model = Donation
 		fields = '__all__'
+		exclude = ['is_taken']

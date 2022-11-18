@@ -51,13 +51,13 @@ class Category(models.Model):
 
 class Institution(models.Model):
 	institution_type= (
-		('FUNDATION', 'Fundacja'),
-		('NON-GOVERMENTAL ORGANISATION', 'Organizacja pozarządowa'),
+		('FOUNDATION', 'Fundacja'),
+		('NON-GOVERNMENTAL ORGANISATION', 'Organizacja pozarządowa'),
 		('LOCAL COLLECTION', 'Zbiórka lokalna'),
 	)
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=256)
-	type = models.CharField(choices=institution_type, default='FUNDATION', max_length=64)
+	type = models.CharField(choices=institution_type, default='FOUNDATION', max_length=64)
 	categories = models.ManyToManyField(Category, related_name='categories')
 
 	def __str__(self):
@@ -65,6 +65,11 @@ class Institution(models.Model):
 
 
 class Donation(models.Model):
+	status = (
+		('TAKEN', 'zabrany'),
+		('NOT TAKEN', 'do odbioru'),
+	)
+
 	quantity = models.PositiveBigIntegerField()
 	categories = models.ManyToManyField(Category, related_name='donation_categories')
 	institution = models.ForeignKey(Institution, on_delete=models.SET_NULL, null=True)
@@ -76,5 +81,6 @@ class Donation(models.Model):
 	pick_up_time = models.TimeField()
 	pick_up_comment = models.CharField(max_length=1024)
 	user = models.ForeignKey(User, null=True, default=None, on_delete=models.SET_NULL)
+	is_taken = models.CharField(choices=status, default='NOT TAKEN', max_length=64)
 
 
