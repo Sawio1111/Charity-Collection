@@ -23,6 +23,11 @@ class UserAdmin(BaseUserAdmin):
 	ordering = ('email',)
 
 
+class InstitutionAdmin(admin.ModelAdmin):
+
+	list_display = ('name', 'display')
+
+
 class DonationAdmin(admin.ModelAdmin):
 
 	model = Donation
@@ -38,7 +43,7 @@ class ContactFormAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Institution)
+admin.site.register(Institution, InstitutionAdmin)
 admin.site.register(Category)
 admin.site.register(Donation, DonationAdmin)
 admin.site.register(ContactForm, ContactFormAdmin)

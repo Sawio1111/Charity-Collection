@@ -59,6 +59,7 @@ class Institution(models.Model):
 	description = models.CharField(max_length=256)
 	type = models.CharField(choices=institution_type, default='FOUNDATION', max_length=64)
 	categories = models.ManyToManyField(Category, related_name='categories')
+	display = models.BooleanField(default=True)
 
 	def __str__(self):
 		return self.name

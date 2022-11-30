@@ -23,9 +23,9 @@ class LandingPageView(View):
 	def get(self, request, *args, **kwargs):
 		number_bags = Donation.objects.all().count()
 		number_organisation = Donation.objects.values('institution_id').distinct().count()
-		foundation = Institution.objects.filter(type='FOUNDATION')
-		non_governmental = Institution.objects.filter(type='NON-GOVERNMENTAL ORGANISATION')
-		local_collection = Institution.objects.filter(type='LOCAL COLLECTION')
+		foundation = Institution.objects.filter(type='FOUNDATION', display=True)
+		non_governmental = Institution.objects.filter(type='NON-GOVERNMENTAL ORGANISATION', display=True)
+		local_collection = Institution.objects.filter(type='LOCAL COLLECTION', display=True)
 		context = {
 			'bags': number_bags,
 			'organisation': number_organisation,
@@ -146,12 +146,3 @@ class ApiContactForm(View):
 			return JsonResponse({'response': 'Data saved'})
 		return JsonResponse({'response': 'Wrong data'})
 
-#In progress
-# class ApiFoundation(LoginRequiredMixin, View):
-#
-# 	def get(self, request, *args, **kwargs):
-# 		list_foundation = Institution.objects.filter(type="FOUNDATION").values('name', 'description')
-# 		paginator = Paginator(list_foundation, 2)
-# 		page_number = kwargs['page']
-# 		page_obj = paginator.get_page(page_number)
-# 		return JsonResponse({'pages': page_obj.number, 'obj': list(page_obj.object_list)})
