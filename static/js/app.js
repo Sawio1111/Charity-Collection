@@ -56,10 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       });
     }
-
-    /**
-     * TODO: callback to page change event
-     */
     changePage(e) {
       e.preventDefault();
       const page = e.target.dataset.page;
@@ -220,9 +216,7 @@ document.addEventListener("DOMContentLoaded", function() {
      * Show next or previous section etc.
      */
     updateForm() {
-      this.$step.innerText = this.currentStep;
-
-      // TODO: Validation
+      this.$step.innerText = this.currentStep
 
       this.slides.forEach(slide => {
         slide.classList.remove("active");
@@ -241,7 +235,6 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
-      // TODO: get data from inputs and show them in summary
     }
     getDataAndSummary () {
       let data = this.getFormValue()
@@ -450,7 +443,6 @@ document.addEventListener("DOMContentLoaded", function() {
         body: JSON.stringify({'form': form})})
           .then(response => response.json())
           .then(data => {
-            console.log(data.response)
             if (data.response === "Data saved") {
               window.location.assign( `/form-confirmation/confirmed/`)
             } else {
@@ -462,8 +454,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     /**
      * Submit form
-     *
-     * TODO: validation, send data to server
      */
     submit(e) {
       e.preventDefault();
@@ -476,4 +466,42 @@ document.addEventListener("DOMContentLoaded", function() {
   if (form !== null) {
     new FormSteps(form);
   }
+
+  /*
+    Contact Form Submit
+   */
+  (function () {
+    let buttonContact = document.querySelector('.form--contact > button')
+    buttonContact.addEventListener('click', (event) => {
+      event.preventDefault()
+      let data = {
+        'name': document.querySelector('#name').value,
+        'surname': document.querySelector('#surname').value,
+        'message': document.querySelector('#message').value
+      }
+      fetch('/form-contact-request/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({'form': data})})
+          .then(response => response.json())
+          .then((data) => {
+            console.log(data)
+            const response = document.querySelector('.output > h3')
+            if (data.response === "Data saved") {
+              response.innerText = "Formularz przyjęty"
+              console.log(event.target)
+              event.target.disabled = true
+            } else {
+              response.innerText = "Nie poprawne dane w formularzu"
+            }
+          }).catch((error) => {
+            console.log(error)
+      })
+    })
+  })()
+
+
 });

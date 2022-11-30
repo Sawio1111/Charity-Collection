@@ -84,3 +84,8 @@ class Donation(models.Model):
 	is_taken = models.CharField(choices=status, default='NOT TAKEN', max_length=64)
 
 
+class ContactForm(models.Model):
+	name = models.CharField(max_length=64)
+	surname = models.CharField(max_length=64)
+	message = models.CharField(max_length=64)
+	data_send = models.DateTimeField(auto_now_add=True)

@@ -7,10 +7,12 @@ from django.views.generic import CreateView, ListView
 from django.contrib.auth.views import LoginView, LogoutView, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 
 from .models import Donation, Category, Institution
-from .forms import RegistrationForms, UpgradeAuthenticationForm, DonationForm
+from .forms import RegistrationForms, UpgradeAuthenticationForm, DonationForm, ContactFormForm
 
 User = get_user_model()
 
@@ -124,7 +126,6 @@ class ApiFormRequest(LoginRequiredMixin, View):
 
 	def post(self, request, *args, **kwargs):
 		form = json.loads(request.body)['form']
-		print(form)
 		form['user'] = self.request.user
 		form_class = self.form_class(form)
 		if form_class.is_valid():
@@ -132,6 +133,18 @@ class ApiFormRequest(LoginRequiredMixin, View):
 			return JsonResponse({'response': 'Data saved'})
 		return JsonResponse({'response': 'Wrong data'})
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ApiContactForm(View):
+	form_class = ContactFormForm
+
+	def post(self, request, *args, **kwargs):
+		form = json.loads(request.body)["form"]
+		form_class = self.form_class(form)
+		if form_class.is_valid():
+			form_class.save()
+			return JsonResponse({'response': 'Data saved'})
+		return JsonResponse({'response': 'Wrong data'})
 
 #In progress
 # class ApiFoundation(LoginRequiredMixin, View):

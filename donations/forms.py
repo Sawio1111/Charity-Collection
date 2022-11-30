@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import ValidationError
 
-from .models import Donation
+from .models import Donation, ContactForm
 
 User = get_user_model()
 
@@ -65,3 +65,10 @@ class DonationForm(forms.ModelForm):
 		model = Donation
 		fields = '__all__'
 		exclude = ['is_taken']
+
+
+class ContactFormForm(forms.ModelForm):
+	class Meta:
+		model = ContactForm
+		fields = '__all__'
+		exclude = ['data_send']

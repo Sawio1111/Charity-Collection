@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User, Institution, Category, Donation
+from .models import User, Institution, Category, Donation, ContactForm
 
 
 class UserAdmin(BaseUserAdmin):
@@ -30,7 +30,15 @@ class DonationAdmin(admin.ModelAdmin):
 	list_filter = ('city', 'is_taken',)
 
 
+class ContactFormAdmin(admin.ModelAdmin):
+
+	model = ContactForm
+	list_display = ('id', 'data_send', 'name', 'surname')
+	list_filter = ('data_send', 'surname')
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Institution)
 admin.site.register(Category)
 admin.site.register(Donation, DonationAdmin)
+admin.site.register(ContactForm, ContactFormAdmin)
