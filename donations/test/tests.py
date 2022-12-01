@@ -21,12 +21,11 @@ def test_index_display(client, create_institutions_categories_donation):
 
 
 @pytest.mark.django_db
-def test_categories_display(create_institutions_categories_donation):
+def test_categories_display(client, create_institutions_categories_donation):
 	categories = Category.objects.count()
 	user = User.objects.first()
-	c = Client()
-	c.force_login(user=user)
-	response = c.get('/donation/')
+	client.force_login(user=user)
+	response = client.get('/donation/')
 	assert response.status_code == 200
 	assert len(response.context['categories']) == categories
 
@@ -54,9 +53,8 @@ def test_register(client):
 
 @pytest.mark.django_db
 def test_profile(client, create_institutions_categories_donation):
-	c = Client()
 	user = User.objects.first()
-	c.force_login(user=user)
-	response = c.get('/profile/')
+	client.force_login(user=user)
+	response = client.get('/profile/')
 	assert response.status_code == 200
 	assert response.context['user'] == user
